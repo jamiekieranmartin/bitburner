@@ -11,8 +11,8 @@ export async function main(ns) {
 
 	while (true) {
 		await server_manager.update();
-		ns.print('Waiting 1 min');
-		await ns.sleep(60000);
+		ns.print('Waiting 1 sec');
+		await ns.sleep(1000);
 	}
 }
 
@@ -73,10 +73,9 @@ class ServerManager {
 		for (let i = 1; i <= 20; i++) {
 			let ram = Math.pow(2, i);
 
-			const money = this.ns.getServerMoneyAvailable("home");
 			const cost = this.ns.getPurchasedServerCost(ram);
+			if (!this.affordable(cost)) break;
 
-			if (cost > money) break;
 			max_ram = ram;
 		}
 
@@ -102,5 +101,11 @@ class ServerManager {
 
 		this.ns.exec(script, host, threads, this.target);
 		this.ns.print(`Running ${script} on server ${host} targeting ${this.target}`);
+	}
+
+	affordable(cost) {
+		const allowance = 0.15;
+		const money = this.ns.getServerMoneyAvailable("home") * allowance;
+		return cost < money;
 	}
 }

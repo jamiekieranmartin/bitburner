@@ -5,8 +5,8 @@ export async function main(ns) {
 
 	while (true) {
 		node_manager.update();
-		ns.print('Waiting 1 min');
-		await ns.sleep(60000);
+		ns.print('Waiting 1 sec');
+		await ns.sleep(1000);
 	}
 }
 
@@ -31,29 +31,22 @@ class NodeManager {
 		const nodes_owned = this.ns.hacknet.numNodes();
 
 		for (let id = 0; id < nodes_owned; id++) {
-			const money = this.ns.getServerMoneyAvailable("home") - 5000000;
-			const cost = this.ns.hacknet.getLevelUpgradeCost(id, 1);
-
-			if (cost < money && this.ns.hacknet.upgradeLevel(id, 1)) {
-				this.ns.print(`Upgraded Level for node ${id}`);
-				continue;
-			};
-			// Core and Ram upgrades pointless for now...
-
-			// if (this.ns.hacknet.upgradeCore(id, 1)) {
-			// 	this.ns.print(`Upgraded Core for node ${id}`);
-			// 	continue;
-			// };
-			// if (this.ns.hacknet.upgradeRam(id, 1)) {
-			// 	this.ns.print(`Upgraded Ram for node ${id}`);
-			// 	continue;
-			// };
+			this.buyWhilePossible(id, this.ns.hacknet.getLevelUpgradeCost, this.ns.hacknet.upgradeLevel);
+			this.buyWhilePossible(id, this.ns.hacknet.getCoreUpgradeCost, this.ns.hacknet.upgradeCore);
+			this.buyWhilePossible(id, this.ns.hacknet.getRamUpgradeCost, this.ns.hacknet.upgradeRam);
 		}
 	}
 
-	update() {
-		this.upgrade();
+	buyWhilePossible(id, costFn, buyFn) {
+		let cost = costFn(id, 1);
 
+		while (this.affordable(cost) && buyFn(id, 1)) {
+			this.ns.print(`Upgraded node ${id}`);
+			cost = costFn(id, 1);
+		};
+	}
+
+	update() {
 		const nodes_owned = this.ns.hacknet.numNodes();
 		const nodes_max = this.ns.hacknet.maxNumNodes();
 
@@ -63,15 +56,22 @@ class NodeManager {
 		if (!id) return;
 
 		this.ns.print(`Bought node ${id}`);
+
+		this.upgrade();
 	}
 
 	purchase() {
-		const money = this.ns.getServerMoneyAvailable("home") - 5000000;
 		const cost = this.ns.hacknet.getPurchaseNodeCost();
-		if (cost > money) return;
+		if (!this.affordable(cost)) return;
 
 		const id = this.ns.hacknet.purchaseNode();
 		if (id == -1) return;
 		return id;
+	}
+
+	affordable(cost) {
+		const allowance = 0.15;
+		const money = this.ns.getServerMoneyAvailable("home") * allowance;
+		return cost < money;
 	}
 }
