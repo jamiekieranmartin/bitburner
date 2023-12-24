@@ -14,4 +14,3 @@ export async function main(ns) {
 		ns.exec("hack.js", host, threads, target);
 	}
 }
-

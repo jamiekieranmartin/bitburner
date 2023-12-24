@@ -5,7 +5,7 @@ export async function main(ns) {
 
 	while (true) {
 		node_manager.update();
-		ns.print('Waiting 1 sec');
+		ns.print("Waiting 1 sec");
 		await ns.sleep(1000);
 	}
 }
@@ -20,8 +20,8 @@ class NodeManager {
 	}
 
 	init() {
-		this.ns.disableLog('ALL');
-		this.ns.print('Initialising Node Manager');
+		this.ns.disableLog("ALL");
+		this.ns.print("Initialising Node Manager");
 
 		const nodes_owned = this.ns.hacknet.numNodes();
 		this.ns.print(`Found ${nodes_owned} nodes`);
@@ -31,9 +31,21 @@ class NodeManager {
 		const nodes_owned = this.ns.hacknet.numNodes();
 
 		for (let id = 0; id < nodes_owned; id++) {
-			this.buyWhilePossible(id, this.ns.hacknet.getLevelUpgradeCost, this.ns.hacknet.upgradeLevel);
-			this.buyWhilePossible(id, this.ns.hacknet.getCoreUpgradeCost, this.ns.hacknet.upgradeCore);
-			this.buyWhilePossible(id, this.ns.hacknet.getRamUpgradeCost, this.ns.hacknet.upgradeRam);
+			this.buyWhilePossible(
+				id,
+				this.ns.hacknet.getLevelUpgradeCost,
+				this.ns.hacknet.upgradeLevel
+			);
+			this.buyWhilePossible(
+				id,
+				this.ns.hacknet.getCoreUpgradeCost,
+				this.ns.hacknet.upgradeCore
+			);
+			this.buyWhilePossible(
+				id,
+				this.ns.hacknet.getRamUpgradeCost,
+				this.ns.hacknet.upgradeRam
+			);
 		}
 	}
 
@@ -43,7 +55,7 @@ class NodeManager {
 		while (this.affordable(cost) && buyFn(id, 1)) {
 			this.ns.print(`Upgraded node ${id}`);
 			cost = costFn(id, 1);
-		};
+		}
 	}
 
 	update() {

@@ -1,4 +1,3 @@
-
 /** @param {NS} ns **/
 export async function main(ns) {
 	const root_manager = new RootManager(ns);
@@ -6,11 +5,10 @@ export async function main(ns) {
 
 	while (true) {
 		await root_manager.update();
-		ns.print('Waiting 1 min');
+		ns.print("Waiting 1 min");
 		await ns.sleep(60000);
 	}
 }
-
 
 class RootManager {
 	/** @param {NS} ns **/
@@ -22,17 +20,17 @@ class RootManager {
 		this.ns = ns;
 
 		this.executables = [
-			{ file: 'BruteSSH.exe', execute: this.ns.brutessh },
-			{ file: 'FTPCrack.exe', execute: this.ns.ftpcrack },
-			{ file: 'relaySMTP.exe', execute: this.ns.relaysmtp },
-			{ file: 'HTTPWorm.exe', execute: this.ns.httpworm },
-			{ file: 'SQLInject.exe', execute: this.ns.sqlinject }
-		]
+			{ file: "BruteSSH.exe", execute: this.ns.brutessh },
+			{ file: "FTPCrack.exe", execute: this.ns.ftpcrack },
+			{ file: "relaySMTP.exe", execute: this.ns.relaysmtp },
+			{ file: "HTTPWorm.exe", execute: this.ns.httpworm },
+			{ file: "SQLInject.exe", execute: this.ns.sqlinject },
+		];
 	}
 
 	async init() {
-		this.ns.disableLog('ALL');
-		this.ns.print('Initialising Root Manager');
+		this.ns.disableLog("ALL");
+		this.ns.print("Initialising Root Manager");
 	}
 
 	async update() {
@@ -40,14 +38,14 @@ class RootManager {
 		this.ns.print(`Scanning ${hostname} for hosts`);
 		const hosts = this.ns.scan(hostname);
 
-		let hacked = 0
+		let hacked = 0;
 
 		for (const host of hosts) {
 			if (this.crack(host)) {
 				await this.spawn(host);
 				hacked += 1;
 			}
-			this.ns.print('Waiting 1 min');
+			this.ns.print("Waiting 1 min");
 			await this.ns.sleep(60000);
 		}
 
@@ -55,7 +53,7 @@ class RootManager {
 	}
 
 	async spawn(host) {
-		const script = "root-manager.js"
+		const script = "root-manager.js";
 		if (this.ns.scriptRunning(script, host)) return;
 
 		await this.ns.scp(script, "home", host);
@@ -67,7 +65,7 @@ class RootManager {
 		if (this.ns.hasRootAccess(host)) return true;
 
 		const ports = this.executables
-			.filter(({ file }) => this.ns.fileExists(file, 'home'))
+			.filter(({ file }) => this.ns.fileExists(file, "home"))
 			.forEach(({ execute }) => execute(host)).length;
 
 		const level = this.ns.getHackingLevel();
@@ -82,7 +80,9 @@ class RootManager {
 	}
 
 	getHackablePorts() {
-		return this.executables.filter(({ file }) => this.ns.fileExists(file, "home")).length;
+		return this.executables.filter(({ file }) =>
+			this.ns.fileExists(file, "home")
+		).length;
 	}
 
 	selfDestruct() {
@@ -91,4 +91,3 @@ class RootManager {
 		this.ns.kill(name, hostname);
 	}
 }
-

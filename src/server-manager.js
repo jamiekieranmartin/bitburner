@@ -1,9 +1,9 @@
-import { uid } from './uid';
+import { uid } from "./uid";
 
 /** @param {NS} ns **/
 export async function main(ns) {
 	if (!ns.args.length) {
-		ns.args.push('n00dles');
+		ns.args.push("n00dles");
 	}
 
 	const server_manager = new ServerManager(ns);
@@ -11,7 +11,7 @@ export async function main(ns) {
 
 	while (true) {
 		await server_manager.update();
-		ns.print('Waiting 1 sec');
+		ns.print("Waiting 1 sec");
 		await ns.sleep(1000);
 	}
 }
@@ -28,8 +28,8 @@ class ServerManager {
 	}
 
 	async init() {
-		this.ns.disableLog('ALL');
-		this.ns.print('Initialising Server Manager');
+		this.ns.disableLog("ALL");
+		this.ns.print("Initialising Server Manager");
 
 		const servers = this.ns.getPurchasedServers();
 		this.ns.print(`Found ${servers.length} servers`);
@@ -100,7 +100,9 @@ class ServerManager {
 		const threads = ram / required_ram;
 
 		this.ns.exec(script, host, threads, this.target);
-		this.ns.print(`Running ${script} on server ${host} targeting ${this.target}`);
+		this.ns.print(
+			`Running ${script} on server ${host} targeting ${this.target}`
+		);
 	}
 
 	affordable(cost) {
